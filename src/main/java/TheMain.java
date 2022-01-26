@@ -16,7 +16,7 @@ public class TheMain {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        new FirstClass(10, 10,1);
+        new FirstClass(7, 7,1);
         
         
     }

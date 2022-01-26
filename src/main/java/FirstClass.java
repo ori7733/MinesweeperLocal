@@ -27,7 +27,7 @@ public class FirstClass implements ActionListener , MouseListener{
     private final int boom=9;
     private int numDiscovered;
     private int level;
-    private JFrame bord;
+    private JFrame frame;
     JButton[][] btnArr;
     private boolean firstStep=true;
     private Stopwatch stopwatch;
@@ -38,7 +38,6 @@ public class FirstClass implements ActionListener , MouseListener{
     public FirstClass(int X,int Y,int level){
         this.lineY=X;
         this.lineX=Y;
-        this.gameBoard=new int[lineY][lineX];
         this.gameBoard=new int[lineY][lineX];
         this.dataBoard=new int[lineY][lineX];
         this.btnArr= new JButton[lineY][lineX];
@@ -67,9 +66,9 @@ public class FirstClass implements ActionListener , MouseListener{
     void init(){
          //  final int SHURA=10;
          //Image photo=new ImageIcon(this.getClass().getResource("C:\Users\melli\Documents\NetBeansProjects\Minesweeper\src\main\java\image\numbers\eight.png")).getImage();
-                    //ImageIcon pngt=new ImageIcon("C:\\Users\\melli\\Documents\\NetBeansProjects\\Minesweeper\\src\\main\\java\\image\\numbers\\eight.png")                    
-        this.bord = new JFrame();
-        this.bord.setLayout(new GridLayout(lineY,0));
+         //ImageIcon pngt=new ImageIcon("C:\\Users\\melli\\Documents\\NetBeansProjects\\Minesweeper\\src\\main\\java\\image\\numbers\\eight.png")                    
+        this.frame = new JFrame();
+        this.frame.setLayout(new GridLayout(lineY,0));
         for (int i = 0; i < lineY*lineX; i++) {
             //JButton btn=new JButton((Icon) photo);
             JButton btn = new JButton("   ");
@@ -77,11 +76,11 @@ public class FirstClass implements ActionListener , MouseListener{
             //btn.addActionListener(this);
             btn.addMouseListener(this);
             btn.setName(""+i);     
-            this.bord.add(btn);
+            this.frame.add(btn);
             this.btnArr[i/lineX][i%lineX] = btn;      
         }
-        this.bord.setSize(1200,1200);
-        this.bord.setVisible(true);
+        this.frame.setSize(1200,1200);
+        this.frame.setVisible(true);
     }  
     
     
@@ -105,7 +104,7 @@ public class FirstClass implements ActionListener , MouseListener{
         resetBoard(this.gameBoard,0);
         //printBoard(this.dataBoard);
         int minesAmount=(lineY*lineX/level);
-        this.numDiscovered=lineY*lineX-minesAmount+1;
+        this.numDiscovered=lineY*lineX-minesAmount;
         this.remainingMines=minesAmount;
         while (minesAmount>0) {            
         for (int i = 0; i < lineY; i++) {
@@ -122,7 +121,7 @@ public class FirstClass implements ActionListener , MouseListener{
                 if(this.gameBoard[i][j]!=boom)
                 setNumbers(i,j);
         //copyArr();
-        printBoard(gameBoard);
+        printBoard(this.gameBoard);
     }
     
     private void printBoard(int[][] board){
@@ -141,7 +140,7 @@ public class FirstClass implements ActionListener , MouseListener{
                 if (i<0||i>lineY-1||j<0||j>lineX-1 )               
                 continue;
                 else{
-                    if(this.gameBoard[i][j]==boom)
+                    if(this.gameBoard[i][j]==this.boom)
                      count++;
                 }
                 this.gameBoard[y][x]=count;
@@ -166,10 +165,10 @@ public class FirstClass implements ActionListener , MouseListener{
             winOrlose="Maybe next time. Want to play again?";
         winOrlose=JOptionPane.showInputDialog(winOrlose);
         if (winOrlose.equals("no")){
-            printBoard(dataBoard);
+            printBoard(this.dataBoard);
             JOptionPane.showMessageDialog(null,"to bad!");
             stopwatch.close();
-            bord.setVisible(false);
+            this.frame.setVisible(false);
             return;
         }
         String levelTemp;
@@ -177,7 +176,7 @@ public class FirstClass implements ActionListener , MouseListener{
         level = Integer.parseInt(levelTemp);
         stopwatch.close();
         JOptionPane.showMessageDialog(null,"let's go!");
-        bord.setVisible(false);
+        this.frame.setVisible(false);
         FirstClass a=new FirstClass(lineY,lineX,level);
     }
     
@@ -186,7 +185,7 @@ public class FirstClass implements ActionListener , MouseListener{
             for (int j = x-1; j < x+2; j++){
                 if ((i<0||i>lineY-1||j<0||j>lineX-1)||(y==i&&x==j))          
                 continue;
-                    if(this.gameBoard[i][j]==0&&this.btnArr[i][j].getBackground()!=Color.WHITE){
+                    if(this.gameBoard[i][j]==0&&this.dataBoard[i][j]==-1){
                         this.dataBoard[i][j]=0;
                         this.btnArr[i][j].setBackground(Color.WHITE);
                         this.btnArr[i][j].setText("0");
@@ -194,7 +193,7 @@ public class FirstClass implements ActionListener , MouseListener{
                         this.numDiscovered--;
                         zeroDetection(i, j);
                     }
-                    if(this.btnArr[i][j].getBackground()!=Color.WHITE){
+                    if(this.dataBoard[i][j]==-1){
                         this.dataBoard[i][j]=gameBoard[i][j];
                         this.btnArr[i][j].setBackground(Color.WHITE);
                         this.btnArr[i][j].setText(""+gameBoard[i][j]);
@@ -206,12 +205,12 @@ public class FirstClass implements ActionListener , MouseListener{
     
    
     @Override
-    public void actionPerformed(ActionEvent e) { 
+    public void actionPerformed(ActionEvent e) {//////////////////////////////////////////////////////////////////////////////////////////////
         int posX,posY,i;
         i= Integer.parseInt( e.getActionCommand());
         posY = i/lineX;
         posX= i%lineX;
-        System.out.println(" butten :"+posX+","+posY);
+        //System.out.println(" butten :"+posX+","+posY);
         this.btnArr[posY][posX].setBackground(Color.red);
         this.btnArr[posY][posX].setText(""+2);
         
@@ -227,53 +226,55 @@ public class FirstClass implements ActionListener , MouseListener{
       //  throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     private void leftClick(int posY,int posX){
-        while (firstStep&&this.gameBoard[posY][posX]==boom){     
+        while (this.firstStep&&this.gameBoard[posY][posX]==boom){     
             newGame(level);
         }
         stopwatch.start();
-        firstStep=false;
+        this.firstStep=false;
         if(this.gameBoard[posY][posX]==boom){
-                    this.btnArr[posY][posX].setBackground(Color.red);
-                    this.btnArr[posY][posX].setText("boom");
-                    this.btnArr[posY][posX].getModel().setPressed(true);
-                    this.dataBoard[posY][posX]=9;
-                    endGame(false);
-                    this.bord.setVisible(false);
-                    }
-                    else{
-                    if(this.btnArr[posY][posX].getBackground()!=Color.WHITE)
-                        this.numDiscovered--;
-                        this.btnArr[posY][posX].setBackground(Color.WHITE);
-                        this.btnArr[posY][posX].setText(""+this.gameBoard[posY][posX]);
-                        this.btnArr[posY][posX].getModel().setPressed(true);
-                        this.dataBoard[posY][posX]=this.gameBoard[posY][posX];
-                        if(this.gameBoard[posY][posX]==0)
-                           zeroDetection(posY,posX);
-                        Image photo=new ImageIcon(this.getClass().getResource("C:\\Users\\melli\\Documents\\NetBeansProjects\\Minesweeper\\src\\main\\java\\image\\numbers\\one.png")).getImage();
-                        this.btnArr[posY][posX].setIcon((Icon) photo);
-                        if(this.numDiscovered==0){
-                            endGame(true);
-                            this.bord.setVisible(false);
-                        }  
-                    }
+            this.btnArr[posY][posX].setBackground(Color.red);
+            this.btnArr[posY][posX].setText("boom");
+            this.btnArr[posY][posX].getModel().setPressed(true);
+            this.dataBoard[posY][posX]=9;
+            endGame(false);
+            this.frame.setVisible(false);
+            }
+        else{
+            if(this.dataBoard[posY][posX]==-1)
+                this.numDiscovered--;
+            this.btnArr[posY][posX].setBackground(Color.WHITE);
+            this.btnArr[posY][posX].setText(""+this.gameBoard[posY][posX]);
+            this.btnArr[posY][posX].getModel().setPressed(true);
+            this.dataBoard[posY][posX]=this.gameBoard[posY][posX];
+            if(this.gameBoard[posY][posX]==0)
+                zeroDetection(posY,posX);
+            if(this.numDiscovered==0){
+                endGame(true);
+                this.frame.setVisible(false);
+            }
+                //Image photo=new ImageIcon(this.getClass().getResource("C:\\Users\\melli\\Documents\\NetBeansProjects\\Minesweeper\\src\\main\\java\\image\\numbers\\one.png")).getImage();
+                //this.btnArr[posY][posX].setIcon((Icon) photo);
+
+        }
     }
     
-    private void rightClick(int y,int x){
-            if (!this.btnArr[y][x].getText().equals("F")&&remainingMines>0){
-                this.btnArr[y][x].setText("F");
-                this.dataBoard[y][x]=-2;
+    private void rightClick(int posY,int posX){
+            if (this.dataBoard[posY][posX]!=-2&&remainingMines>0){
+                this.btnArr[posY][posX].setText("F");
+                this.dataBoard[posY][posX]=-2;
                 this.remainingMines--;
         }
-            else if (this.btnArr[y][x].getText().equals("F")){
-            this.btnArr[y][x].setText(" ");
-            this.dataBoard[y][x]=-1;
-            this.remainingMines++;
-        }
+            else if (this.dataBoard[posY][posX]==-2){
+                this.btnArr[posY][posX].setText(" ");
+                this.dataBoard[posY][posX]=-1;
+                this.remainingMines++;
+            }
         if(this.remainingMines==0){
             boolean winnerBool=true;
+            printBoard(dataBoard);
             for (int i = 0; i < lineY; i++){
                 for (int j = 0; j < lineX; j++){
-                    if(btnArr[i][j].getText().equals("F")&&this.gameBoard[i][j]!=boom){
+                    if(this.dataBoard[i][j]==-2&&this.gameBoard[i][j]!=boom){
                         winnerBool=false;
                         break;
                     }
@@ -284,8 +285,10 @@ public class FirstClass implements ActionListener , MouseListener{
         if(winnerBool)
             endGame(true);
         }
-        this.btnArr[y][x].getModel().setPressed(false);
-        this.btnArr[y][x].setEnabled(true);
+        this.btnArr[posY][posX].getModel().setPressed(false);
+        this.btnArr[posY][posX].setEnabled(true);
+        System.out.println(" \n remainingMines "+remainingMines);
+        System.out.println(" \n numDiscovered "+numDiscovered);
     }
 
     @Override
@@ -296,9 +299,9 @@ public class FirstClass implements ActionListener , MouseListener{
         i= Integer.parseInt( e.getComponent().getName());
         posY = i/lineX;
         posX= i%lineX;
-        if (e.getButton() == 3&&this.btnArr[posY][posX].getBackground()!=Color.WHITE)// if right click on unpresed btn
+        if (e.getButton() == 3&&(this.dataBoard[posY][posX]==-1||this.dataBoard[posY][posX]==-2))// if right click on unpresed btn
                     rightClick(posY, posX);
-                else  if(!this.btnArr[posY][posX].getText().equals("F"))// if left click
+                else  if(this.dataBoard[posY][posX]==-1)// if left click
                     leftClick(posY, posX);
     }
 
