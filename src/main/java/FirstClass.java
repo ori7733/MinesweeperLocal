@@ -12,6 +12,7 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.SwingConstants;
+import javax.swing.Timer;
 
 /*
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
@@ -30,11 +31,40 @@ public class FirstClass implements ActionListener , MouseListener{
     private JFrame frame;
     JButton[][] btnArr;
     private boolean firstStep=true;
-    private Stopwatch stopwatch;
+
     
-    
-  /*consractor metod    
-    */
+ 
+    int elapsedTime = 0;
+    int seconds = 0;
+    int minutes = 0;
+    int hours = 0;
+    boolean started = false;
+    String seconds_string = String.format("%02d", seconds);
+    String minutes_string = String.format("%02d", minutes);
+    String hours_string = String.format("%02d", hours);
+
+    Timer timer = new Timer(1000, new ActionListener() {
+
+        public void actionPerformed(ActionEvent e) {
+
+           
+            frame.setTitle(getTimerSt()+ "  mines : "+remainingMines);
+
+        }
+
+    });
+    private String getTimerSt(){
+        elapsedTime = elapsedTime + 1000;
+            hours = (elapsedTime / 3600000);
+            minutes = (elapsedTime / 60000) % 60;
+            seconds = (elapsedTime / 1000) % 60;
+            seconds_string = String.format("%02d", seconds);
+            minutes_string = String.format("%02d", minutes);
+            hours_string = String.format("%02d", hours);
+            return (hours_string + ":" + minutes_string + ":" + seconds_string);
+            
+    }
+
     public FirstClass(int X,int Y,int level){
         this.lineY=X;
         this.lineX=Y;
@@ -42,7 +72,7 @@ public class FirstClass implements ActionListener , MouseListener{
         this.dataBoard=new int[lineY][lineX];
         this.btnArr= new JButton[lineY][lineX];
         this.level=setLevel(level);
-        stopwatch=new Stopwatch();
+     //   stopwatch=new Stopwatch();
         newGame(this.level);
         init();
     }
@@ -157,7 +187,8 @@ public class FirstClass implements ActionListener , MouseListener{
     
     private void endGame(boolean iswin) {
         int level;
-        stopwatch.stop();
+      //  stopwatch.stop();
+      timer.stop();
         String winOrlose;
         if(iswin)
             winOrlose="Good job! Want to play again?";
@@ -167,14 +198,14 @@ public class FirstClass implements ActionListener , MouseListener{
         if (winOrlose.equals("no")){
             printBoard(this.dataBoard);
             JOptionPane.showMessageDialog(null,"to bad!");
-            stopwatch.close();
+      //      stopwatch.close();
             this.frame.setVisible(false);
             return;
         }
         String levelTemp;
         levelTemp=JOptionPane.showInputDialog("then let's play again!! What level of difficulty do you want?");
         level = Integer.parseInt(levelTemp);
-        stopwatch.close();
+      //  stopwatch.close();
         JOptionPane.showMessageDialog(null,"let's go!");
         this.frame.setVisible(false);
         FirstClass a=new FirstClass(lineY,lineX,level);
@@ -229,7 +260,7 @@ public class FirstClass implements ActionListener , MouseListener{
         while (this.firstStep&&this.gameBoard[posY][posX]==boom){     
             newGame(level);
         }
-        stopwatch.start();
+        timer.start();
         this.firstStep=false;
         if(this.gameBoard[posY][posX]==boom){
             this.btnArr[posY][posX].setBackground(Color.red);
