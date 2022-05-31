@@ -1,4 +1,4 @@
-package SQL.exceptions;
+package DataBase.exceptions;
 
 import java.util.ArrayList;
 import java.util.List;

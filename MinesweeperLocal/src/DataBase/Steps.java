@@ -2,32 +2,37 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package SQL;
+package DataBase;
 
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  *
  * @author Ori
  */
 @Entity
-@Table(name = "BombsLocation")
+@Table(name = "Steps")
 @NamedQueries({
-    @NamedQuery(name = "BombsLocation.findAll", query = "SELECT b FROM BombsLocation b"),
-    @NamedQuery(name = "BombsLocation.findById", query = "SELECT b FROM BombsLocation b WHERE b.id = :id"),
-    @NamedQuery(name = "BombsLocation.findByGameID", query = "SELECT b FROM BombsLocation b WHERE b.gameID = :gameID"),
-    @NamedQuery(name = "BombsLocation.findByY", query = "SELECT b FROM BombsLocation b WHERE b.y = :y"),
-    @NamedQuery(name = "BombsLocation.findByX", query = "SELECT b FROM BombsLocation b WHERE b.x = :x")})
-public class BombsLocation implements Serializable {
+    @NamedQuery(name = "Steps.findAll", query = "SELECT s FROM Steps s"),
+    @NamedQuery(name = "Steps.findById", query = "SELECT s FROM Steps s WHERE s.id = :id"),
+    @NamedQuery(name = "Steps.findByTime", query = "SELECT s FROM Steps s WHERE s.time = :time"),
+    @NamedQuery(name = "Steps.findByY", query = "SELECT s FROM Steps s WHERE s.y = :y"),
+    @NamedQuery(name = "Steps.findByX", query = "SELECT s FROM Steps s WHERE s.x = :x")})
+public class Steps implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -36,25 +41,29 @@ public class BombsLocation implements Serializable {
     @Column(name = "ID")
     private Integer id;
     @Basic(optional = false)
-    @Column(name = "gameID")
-    private int gameID;
+    @Column(name = "time")
+    @Temporal(TemporalType.TIME)
+    private Date time;
     @Basic(optional = false)
     @Column(name = "y")
     private int y;
     @Basic(optional = false)
     @Column(name = "x")
     private int x;
+    @JoinColumn(name = "gameID", referencedColumnName = "ID")
+    @ManyToOne(optional = false)
+    private Games gameID;
 
-    public BombsLocation() {
+    public Steps() {
     }
 
-    public BombsLocation(Integer id) {
+    public Steps(Integer id) {
         this.id = id;
     }
 
-    public BombsLocation(Integer id, int gameID, int y, int x) {
+    public Steps(Integer id, Date time, int y, int x) {
         this.id = id;
-        this.gameID = gameID;
+        this.time = time;
         this.y = y;
         this.x = x;
     }
@@ -67,12 +76,12 @@ public class BombsLocation implements Serializable {
         this.id = id;
     }
 
-    public int getGameID() {
-        return gameID;
+    public Date getTime() {
+        return time;
     }
 
-    public void setGameID(int gameID) {
-        this.gameID = gameID;
+    public void setTime(Date time) {
+        this.time = time;
     }
 
     public int getY() {
@@ -91,6 +100,14 @@ public class BombsLocation implements Serializable {
         this.x = x;
     }
 
+    public Games getGameID() {
+        return gameID;
+    }
+
+    public void setGameID(Games gameID) {
+        this.gameID = gameID;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -101,10 +118,10 @@ public class BombsLocation implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof BombsLocation)) {
+        if (!(object instanceof Steps)) {
             return false;
         }
-        BombsLocation other = (BombsLocation) object;
+        Steps other = (Steps) object;
         if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
             return false;
         }
@@ -113,7 +130,7 @@ public class BombsLocation implements Serializable {
 
     @Override
     public String toString() {
-        return "SQL.BombsLocation[ id=" + id + " ]";
+        return "DataBase.Steps[ id=" + id + " ]";
     }
     
 }

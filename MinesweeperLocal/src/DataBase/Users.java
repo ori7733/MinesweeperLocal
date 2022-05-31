@@ -2,10 +2,12 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package SQL;
+package DataBase;
 
 import java.io.Serializable;
+import java.util.Collection;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -13,6 +15,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -44,6 +47,10 @@ public class Users implements Serializable {
     @Basic(optional = false)
     @Column(name = "password")
     private String password;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "userID")
+    private Collection<FavoriteSize> favoriteSizeCollection;
+    @OneToMany(mappedBy = "userID")
+    private Collection<Games> gamesCollection;
 
     public Users() {
     }
@@ -91,6 +98,22 @@ public class Users implements Serializable {
         this.password = password;
     }
 
+    public Collection<FavoriteSize> getFavoriteSizeCollection() {
+        return favoriteSizeCollection;
+    }
+
+    public void setFavoriteSizeCollection(Collection<FavoriteSize> favoriteSizeCollection) {
+        this.favoriteSizeCollection = favoriteSizeCollection;
+    }
+
+    public Collection<Games> getGamesCollection() {
+        return gamesCollection;
+    }
+
+    public void setGamesCollection(Collection<Games> gamesCollection) {
+        this.gamesCollection = gamesCollection;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -113,7 +136,7 @@ public class Users implements Serializable {
 
     @Override
     public String toString() {
-        return "SQL.Users[ id=" + id + " ]";
+        return "DataBase.Users[ id=" + id + " ]";
     }
     
 }

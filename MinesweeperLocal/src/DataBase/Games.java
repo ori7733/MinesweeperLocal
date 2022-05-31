@@ -2,19 +2,24 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package SQL;
+package DataBase;
 
 import java.io.Serializable;
+import java.util.Collection;
 import java.util.Date;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -28,9 +33,6 @@ import javax.persistence.TemporalType;
 @NamedQueries({
     @NamedQuery(name = "Games.findAll", query = "SELECT g FROM Games g"),
     @NamedQuery(name = "Games.findById", query = "SELECT g FROM Games g WHERE g.id = :id"),
-    @NamedQuery(name = "Games.findByUserID", query = "SELECT g FROM Games g WHERE g.userID = :userID"),
-    @NamedQuery(name = "Games.findByColumns", query = "SELECT g FROM Games g WHERE g.columns = :columns"),
-    @NamedQuery(name = "Games.findByRows", query = "SELECT g FROM Games g WHERE g.rows = :rows"),
     @NamedQuery(name = "Games.findByDstart", query = "SELECT g FROM Games g WHERE g.dstart = :dstart"),
     @NamedQuery(name = "Games.findByDend", query = "SELECT g FROM Games g WHERE g.dend = :dend"),
     @NamedQuery(name = "Games.findByIsFinish", query = "SELECT g FROM Games g WHERE g.isFinish = :isFinish")})
@@ -42,14 +44,6 @@ public class Games implements Serializable {
     @Basic(optional = false)
     @Column(name = "ID")
     private Integer id;
-    @Column(name = "userID")
-    private Integer userID;
-    @Basic(optional = false)
-    @Column(name = "columns")
-    private int columns;
-    @Basic(optional = false)
-    @Column(name = "rows")
-    private int rows;
     @Column(name = "D_start")
     @Temporal(TemporalType.DATE)
     private Date dstart;
@@ -62,6 +56,17 @@ public class Games implements Serializable {
     @Basic(optional = false)
     @Column(name = "isFinish")
     private boolean isFinish;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "gameID")
+    private Collection<Steps> stepsCollection;
+    @JoinColumn(name = "columns", referencedColumnName = "ID")
+    @ManyToOne(optional = false)
+    private FavoriteSize columns;
+    @JoinColumn(name = "rows", referencedColumnName = "ID")
+    @ManyToOne(optional = false)
+    private FavoriteSize rows;
+    @JoinColumn(name = "userID", referencedColumnName = "ID")
+    @ManyToOne
+    private Users userID;
 
     public Games() {
     }
@@ -70,10 +75,8 @@ public class Games implements Serializable {
         this.id = id;
     }
 
-    public Games(Integer id, int columns, int rows, boolean isFinish) {
+    public Games(Integer id, boolean isFinish) {
         this.id = id;
-        this.columns = columns;
-        this.rows = rows;
         this.isFinish = isFinish;
     }
 
@@ -83,30 +86,6 @@ public class Games implements Serializable {
 
     public void setId(Integer id) {
         this.id = id;
-    }
-
-    public Integer getUserID() {
-        return userID;
-    }
-
-    public void setUserID(Integer userID) {
-        this.userID = userID;
-    }
-
-    public int getColumns() {
-        return columns;
-    }
-
-    public void setColumns(int columns) {
-        this.columns = columns;
-    }
-
-    public int getRows() {
-        return rows;
-    }
-
-    public void setRows(int rows) {
-        this.rows = rows;
     }
 
     public Date getDstart() {
@@ -141,6 +120,38 @@ public class Games implements Serializable {
         this.isFinish = isFinish;
     }
 
+    public Collection<Steps> getStepsCollection() {
+        return stepsCollection;
+    }
+
+    public void setStepsCollection(Collection<Steps> stepsCollection) {
+        this.stepsCollection = stepsCollection;
+    }
+
+    public FavoriteSize getColumns() {
+        return columns;
+    }
+
+    public void setColumns(FavoriteSize columns) {
+        this.columns = columns;
+    }
+
+    public FavoriteSize getRows() {
+        return rows;
+    }
+
+    public void setRows(FavoriteSize rows) {
+        this.rows = rows;
+    }
+
+    public Users getUserID() {
+        return userID;
+    }
+
+    public void setUserID(Users userID) {
+        this.userID = userID;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -163,7 +174,7 @@ public class Games implements Serializable {
 
     @Override
     public String toString() {
-        return "SQL.Games[ id=" + id + " ]";
+        return "DataBase.Games[ id=" + id + " ]";
     }
     
 }

@@ -2,9 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package SQL;
+package DataBase;
 
-import SQL.exceptions.NonexistentEntityException;
+import DataBase.exceptions.NonexistentEntityException;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -18,9 +18,9 @@ import javax.persistence.criteria.Root;
  *
  * @author Ori
  */
-public class UsersJpaController implements Serializable {
+public class StepsJpaController implements Serializable {
 
-    public UsersJpaController(EntityManagerFactory emf) {
+    public StepsJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
     private EntityManagerFactory emf = null;
@@ -29,12 +29,21 @@ public class UsersJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Users users) {
+    public void create(Steps steps) {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            em.persist(users);
+            Games gameID = steps.getGameID();
+            if (gameID != null) {
+                gameID = em.getReference(gameID.getClass(), gameID.getId());
+                steps.setGameID(gameID);
+            }
+            em.persist(steps);
+            if (gameID != null) {
+                gameID.getStepsCollection().add(steps);
+                gameID = em.merge(gameID);
+            }
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -43,19 +52,34 @@ public class UsersJpaController implements Serializable {
         }
     }
 
-    public void edit(Users users) throws NonexistentEntityException, Exception {
+    public void edit(Steps steps) throws NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            users = em.merge(users);
+            Steps persistentSteps = em.find(Steps.class, steps.getId());
+            Games gameIDOld = persistentSteps.getGameID();
+            Games gameIDNew = steps.getGameID();
+            if (gameIDNew != null) {
+                gameIDNew = em.getReference(gameIDNew.getClass(), gameIDNew.getId());
+                steps.setGameID(gameIDNew);
+            }
+            steps = em.merge(steps);
+            if (gameIDOld != null && !gameIDOld.equals(gameIDNew)) {
+                gameIDOld.getStepsCollection().remove(steps);
+                gameIDOld = em.merge(gameIDOld);
+            }
+            if (gameIDNew != null && !gameIDNew.equals(gameIDOld)) {
+                gameIDNew.getStepsCollection().add(steps);
+                gameIDNew = em.merge(gameIDNew);
+            }
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                Integer id = users.getId();
-                if (findUsers(id) == null) {
-                    throw new NonexistentEntityException("The users with id " + id + " no longer exists.");
+                Integer id = steps.getId();
+                if (findSteps(id) == null) {
+                    throw new NonexistentEntityException("The steps with id " + id + " no longer exists.");
                 }
             }
             throw ex;
@@ -71,14 +95,19 @@ public class UsersJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Users users;
+            Steps steps;
             try {
-                users = em.getReference(Users.class, id);
-                users.getId();
+                steps = em.getReference(Steps.class, id);
+                steps.getId();
             } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The users with id " + id + " no longer exists.", enfe);
+                throw new NonexistentEntityException("The steps with id " + id + " no longer exists.", enfe);
             }
-            em.remove(users);
+            Games gameID = steps.getGameID();
+            if (gameID != null) {
+                gameID.getStepsCollection().remove(steps);
+                gameID = em.merge(gameID);
+            }
+            em.remove(steps);
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -87,19 +116,19 @@ public class UsersJpaController implements Serializable {
         }
     }
 
-    public List<Users> findUsersEntities() {
-        return findUsersEntities(true, -1, -1);
+    public List<Steps> findStepsEntities() {
+        return findStepsEntities(true, -1, -1);
     }
 
-    public List<Users> findUsersEntities(int maxResults, int firstResult) {
-        return findUsersEntities(false, maxResults, firstResult);
+    public List<Steps> findStepsEntities(int maxResults, int firstResult) {
+        return findStepsEntities(false, maxResults, firstResult);
     }
 
-    private List<Users> findUsersEntities(boolean all, int maxResults, int firstResult) {
+    private List<Steps> findStepsEntities(boolean all, int maxResults, int firstResult) {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            cq.select(cq.from(Users.class));
+            cq.select(cq.from(Steps.class));
             Query q = em.createQuery(cq);
             if (!all) {
                 q.setMaxResults(maxResults);
@@ -111,20 +140,20 @@ public class UsersJpaController implements Serializable {
         }
     }
 
-    public Users findUsers(Integer id) {
+    public Steps findSteps(Integer id) {
         EntityManager em = getEntityManager();
         try {
-            return em.find(Users.class, id);
+            return em.find(Steps.class, id);
         } finally {
             em.close();
         }
     }
 
-    public int getUsersCount() {
+    public int getStepsCount() {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            Root<Users> rt = cq.from(Users.class);
+            Root<Steps> rt = cq.from(Steps.class);
             cq.select(em.getCriteriaBuilder().count(rt));
             Query q = em.createQuery(cq);
             return ((Long) q.getSingleResult()).intValue();

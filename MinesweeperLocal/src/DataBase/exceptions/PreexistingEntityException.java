@@ -1,4 +1,4 @@
-package SQL.exceptions;
+package DataBase.exceptions;
 
 public class PreexistingEntityException extends Exception {
     public PreexistingEntityException(String message, Throwable cause) {

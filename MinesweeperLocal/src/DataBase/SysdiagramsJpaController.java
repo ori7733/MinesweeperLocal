@@ -2,9 +2,9 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package SQL;
+package DataBase;
 
-import SQL.exceptions.NonexistentEntityException;
+import DataBase.exceptions.NonexistentEntityException;
 import java.io.Serializable;
 import java.util.List;
 import javax.persistence.EntityManager;
@@ -18,9 +18,9 @@ import javax.persistence.criteria.Root;
  *
  * @author Ori
  */
-public class PasswordJpaController implements Serializable {
+public class SysdiagramsJpaController implements Serializable {
 
-    public PasswordJpaController(EntityManagerFactory emf) {
+    public SysdiagramsJpaController(EntityManagerFactory emf) {
         this.emf = emf;
     }
     private EntityManagerFactory emf = null;
@@ -29,12 +29,12 @@ public class PasswordJpaController implements Serializable {
         return emf.createEntityManager();
     }
 
-    public void create(Password password) {
+    public void create(Sysdiagrams sysdiagrams) {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            em.persist(password);
+            em.persist(sysdiagrams);
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -43,19 +43,19 @@ public class PasswordJpaController implements Serializable {
         }
     }
 
-    public void edit(Password password) throws NonexistentEntityException, Exception {
+    public void edit(Sysdiagrams sysdiagrams) throws NonexistentEntityException, Exception {
         EntityManager em = null;
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            password = em.merge(password);
+            sysdiagrams = em.merge(sysdiagrams);
             em.getTransaction().commit();
         } catch (Exception ex) {
             String msg = ex.getLocalizedMessage();
             if (msg == null || msg.length() == 0) {
-                Integer id = password.getId();
-                if (findPassword(id) == null) {
-                    throw new NonexistentEntityException("The password with id " + id + " no longer exists.");
+                Integer id = sysdiagrams.getDiagramId();
+                if (findSysdiagrams(id) == null) {
+                    throw new NonexistentEntityException("The sysdiagrams with id " + id + " no longer exists.");
                 }
             }
             throw ex;
@@ -71,14 +71,14 @@ public class PasswordJpaController implements Serializable {
         try {
             em = getEntityManager();
             em.getTransaction().begin();
-            Password password;
+            Sysdiagrams sysdiagrams;
             try {
-                password = em.getReference(Password.class, id);
-                password.getId();
+                sysdiagrams = em.getReference(Sysdiagrams.class, id);
+                sysdiagrams.getDiagramId();
             } catch (EntityNotFoundException enfe) {
-                throw new NonexistentEntityException("The password with id " + id + " no longer exists.", enfe);
+                throw new NonexistentEntityException("The sysdiagrams with id " + id + " no longer exists.", enfe);
             }
-            em.remove(password);
+            em.remove(sysdiagrams);
             em.getTransaction().commit();
         } finally {
             if (em != null) {
@@ -87,19 +87,19 @@ public class PasswordJpaController implements Serializable {
         }
     }
 
-    public List<Password> findPasswordEntities() {
-        return findPasswordEntities(true, -1, -1);
+    public List<Sysdiagrams> findSysdiagramsEntities() {
+        return findSysdiagramsEntities(true, -1, -1);
     }
 
-    public List<Password> findPasswordEntities(int maxResults, int firstResult) {
-        return findPasswordEntities(false, maxResults, firstResult);
+    public List<Sysdiagrams> findSysdiagramsEntities(int maxResults, int firstResult) {
+        return findSysdiagramsEntities(false, maxResults, firstResult);
     }
 
-    private List<Password> findPasswordEntities(boolean all, int maxResults, int firstResult) {
+    private List<Sysdiagrams> findSysdiagramsEntities(boolean all, int maxResults, int firstResult) {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            cq.select(cq.from(Password.class));
+            cq.select(cq.from(Sysdiagrams.class));
             Query q = em.createQuery(cq);
             if (!all) {
                 q.setMaxResults(maxResults);
@@ -111,20 +111,20 @@ public class PasswordJpaController implements Serializable {
         }
     }
 
-    public Password findPassword(Integer id) {
+    public Sysdiagrams findSysdiagrams(Integer id) {
         EntityManager em = getEntityManager();
         try {
-            return em.find(Password.class, id);
+            return em.find(Sysdiagrams.class, id);
         } finally {
             em.close();
         }
     }
 
-    public int getPasswordCount() {
+    public int getSysdiagramsCount() {
         EntityManager em = getEntityManager();
         try {
             CriteriaQuery cq = em.getCriteriaBuilder().createQuery();
-            Root<Password> rt = cq.from(Password.class);
+            Root<Sysdiagrams> rt = cq.from(Sysdiagrams.class);
             cq.select(em.getCriteriaBuilder().count(rt));
             Query q = em.createQuery(cq);
             return ((Long) q.getSingleResult()).intValue();

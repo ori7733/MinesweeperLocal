@@ -4,6 +4,11 @@
  */
 
 
+import DataBase.*;
+import java.util.ArrayList;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
 import javax.swing.JOptionPane;
 
 /**
@@ -16,17 +21,36 @@ public class MinesweeperLocal {
      * @param args the command line arguments
      */
     public static void main(String[] args) {
-        //new Intro().setVisible(true);
+        dataPrint();
+        //dataInsert();
+       
         
-        new GameClass(20, 24,2);
-       /*LinkedList<Integer> linkedList=new LinkedList<Integer>();
-           for (int i = 0; i < 10; i++) 
-           linkedList.add(i+5);
-           System.out.println(linkedList.get(4));
-           System.out.println(linkedList);*/
-       //startGame();
         
     }
+    
+    public static void dataInsert(){
+       // EntityManagerFactory emf = Persistence.createEntityManagerFactory("MinesweeperLocalPU");
+        
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("MinesweeperLocalPU");
+        Users t = new Users();
+        UsersJpaController a = new UsersJpaController(emf);
+        t.setName("da");
+        t.setPassword("daa");
+        t.setUserName("daswa");
+        a.create(t);
+        /*
+        String name = "dasv";
+        String password = "dsadsa";
+        String userName = "dfsf";
+        Users users = new Users();
+        users.setName(name);
+        users.setPassword(password);
+        users.setUserName(userName);
+        UsersJpaController a = new UsersJpaController(emf);
+        a.create(users);
+        */
+    }
+    
     public static void startGame(){
         int lineY, lineX, level;
         String temp = JOptionPane.showInputDialog("How much on how to make the board? ");
@@ -52,6 +76,19 @@ public class MinesweeperLocal {
         //GameClass b=new FirstClass(lineY,lineX,level);
 
 
+    }
+
+    private static void dataPrint() {
+        EntityManagerFactory emf = Persistence.createEntityManagerFactory("MinesweeperLocalPU");
+        //Users users = new Users();
+        UsersJpaController a = new UsersJpaController(emf);
+        ArrayList<Users> users = new ArrayList<Users>();
+        users.addAll(a.findUsersEntities());
+        //users.add(a.findUsersEntities().get(0));
+        for (int i = 0; i < a.findUsersEntities().size(); i++) {
+        System.out.println(users.get(i).getName());
+        }
+        
     }
     
 }

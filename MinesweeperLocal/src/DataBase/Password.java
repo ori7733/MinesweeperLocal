@@ -2,7 +2,7 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package SQL;
+package DataBase;
 
 import java.io.Serializable;
 import javax.persistence.Basic;
@@ -124,7 +124,7 @@ public class Password implements Serializable {
 
     @Override
     public String toString() {
-        return "SQL.Password[ id=" + id + " ]";
+        return "DataBase.Password[ id=" + id + " ]";
     }
     
 }
